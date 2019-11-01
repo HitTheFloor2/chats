@@ -1,32 +1,51 @@
 package com.hitty.io;
 
+import com.hitty.MPacket;
 import com.hitty.echo.EchoServer;
 import com.hitty.status.Status;
 
 import java.util.Scanner;
 
 public class Shell implements Runnable{
+/*
+* Shell是用于交互的线程
+* Shell接受用户输入，并且将其打包成MPacket发送
+* 当消息传入时也会从Shell反馈给用户
+*
+* Shell用户分为各种视图：
+* chats > : 命令视图，可以进行命令输入
+* (xxx) > : 聊天视图，输入的字符串默认传递给xxx，在聊天视图使用命令需要
+*
+* */
 
-    public EchoServer echoServer;
-    public Shell(EchoServer echoServer){
-        this.echoServer = echoServer;
-    }
+    public Shell(){}
     @Override
     public void run() {
-        //创建Scanner对象
-        //System.in表示标准化输出，也就是键盘输出
-
-        System.out.println(Status.name);
-        //利用hasNextXXX()判断是否还有下一输入项
+        Scanner sc = new Scanner(System.in);
         while (true) {
-            System.out.print("casting > ");
-
-            Scanner sc = new Scanner(System.in);
+            System.out.print("chats > ");
             String str = sc.nextLine();
             if(str.length() == 0){continue;}
 
-            this.echoServer.write2Casting(str);
+
 
         }
+    }
+    public void command(String s){
+        if(s.equals("show fellow")){
+
+        }
+
+    }
+    public void Log(){
+
+
+    }
+    public void reply(String string){
+        /*
+        * 由外部ServerHandler或Server调用
+        *
+        * */
+        System.out.println(string);
     }
 }
