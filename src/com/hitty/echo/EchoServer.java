@@ -39,23 +39,23 @@ public class EchoServer implements Runnable{
     }
 
     public void write2Casting(String content){
-        MPacket mPacket = new MPacket(Status.localSocketAddress,castingInetSocketAddress, Constants.casting,Status.localSocketAddress.getAddress().getHostAddress());
-        Object object = JSONArray.toJSON(mPacket);
-        String s = object.toString();
+        MPacket mPacket = new MPacket(Status.localSocketAddress,castingInetSocketAddress,
+                Constants.casting,Status.localSocketAddress.getAddress().getHostAddress());
+        String s = mPacket.toJSONString();
         //System.out.println(s);
         try {
             ch.writeAndFlush(
-                    new DatagramPacket(Unpooled.copiedBuffer(s,CharsetUtil.UTF_8), castingInetSocketAddress)).sync();
+                    new DatagramPacket(Unpooled.copiedBuffer(s,CharsetUtil.UTF_8),
+                            new InetSocketAddress("192.168.0.255",8080))).sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
     }
-    public void write2fellow(InetSocketAddress inetSocketAddress){
-        MPacket mPacket = new MPacket(Status.localSocketAddress,inetSocketAddress, Constants.casting,"");
-        Object object = JSONArray.toJSON(mPacket);
-        String s = object.toString();
-        //System.out.println(s);
+    public void write2fellow(InetSocketAddress inetSocketAddress,String content){
+        MPacket mPacket = new MPacket(Status.localSocketAddress,inetSocketAddress, Constants.verbose,content);
+        String s = mPacket.toJSONString();
+
         try {
             ch.writeAndFlush(
                     new DatagramPacket(Unpooled.copiedBuffer(s,CharsetUtil.UTF_8), inetSocketAddress)).sync();
@@ -75,7 +75,7 @@ public class EchoServer implements Runnable{
             ch = b.bind(port).sync().channel();
             while(true){
                 this.write2Casting("");
-                this.write2fellow(new InetSocketAddress("192.168.0.255",8080));
+                //this.write2fellow(new InetSocketAddress("192.168.0.255",8080));
 
                 if(!ch.closeFuture().await(5000)){
                     //System.out.println("echo no response");

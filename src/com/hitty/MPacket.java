@@ -1,5 +1,7 @@
 package com.hitty;
 
+import com.alibaba.fastjson.JSONArray;
+
 import java.net.InetSocketAddress;
 import java.util.Scanner;
 
@@ -23,6 +25,11 @@ public class MPacket {
         this.content = content;
         this.src = null;
         this.dst = null;
+    }
+    public String toJSONString(){
+        Object object = JSONArray.toJSON(this);
+        String s = object.toString();
+        return s;
     }
     public void showInfo(){
         System.out.println("*******************");

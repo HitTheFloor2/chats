@@ -11,6 +11,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.stomp.StompSubframeAggregator;
 import io.netty.util.CharsetUtil;
 
+import java.net.InetSocketAddress;
 import java.util.stream.StreamSupport;
 
 
@@ -20,13 +21,18 @@ public class EchoServerHandler  extends
 
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
-
+        //channelRead()中尽量不进行耗时操作，转交给其他线程
         MPacket p = JSONArray.parseObject(datagramPacket.content().toString(CharsetUtil.UTF_8),MPacket.class);
+
         if(p.funOp.equals(Constants.casting) && p.content.length() > 0){
             if(!Status.localSocketAddress.getAddress().getHostAddress().equals(p.content)){
                 Status.shell.reply("receive casting from "+p.content);
+                Status.fellows.add(new InetSocketAddress(p.content,8080));
             }
 
+        }
+        if(p.funOp.equals(Constants.verbose)){
+            Status.shell.reply("\nfrom "+datagramPacket.sender().getAddress().getHostAddress()+" : "+p.content);
         }
 
     }
