@@ -29,7 +29,7 @@ import java.net.InetSocketAddress;
 public class EchoServer implements Runnable{
     private int port;
     public Channel ch;
-    public Shell shell;
+
     public EchoServerHandler echoServerHandler;
     public InetSocketAddress castingInetSocketAddress;
     public EchoServer(int port) {
@@ -39,7 +39,7 @@ public class EchoServer implements Runnable{
     }
 
     public void write2Casting(String content){
-        MPacket mPacket = new MPacket(Status.localSocketAddress,castingInetSocketAddress, Constants.casting,"");
+        MPacket mPacket = new MPacket(Status.localSocketAddress,castingInetSocketAddress, Constants.casting,Status.localSocketAddress.getAddress().getHostAddress());
         Object object = JSONArray.toJSON(mPacket);
         String s = object.toString();
         //System.out.println(s);

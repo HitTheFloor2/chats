@@ -22,7 +22,13 @@ public class EchoServerHandler  extends
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket datagramPacket) throws Exception {
 
         MPacket p = JSONArray.parseObject(datagramPacket.content().toString(CharsetUtil.UTF_8),MPacket.class);
-        Status.shell.reply("receive casting from "+p.src.toString());
+        if(p.funOp.equals(Constants.casting) && p.content.length() > 0){
+            if(!Status.localSocketAddress.getAddress().getHostAddress().equals(p.content)){
+                Status.shell.reply("receive casting from "+p.content);
+            }
+
+        }
+
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
