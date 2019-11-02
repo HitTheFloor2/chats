@@ -11,6 +11,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.stomp.StompSubframeAggregator;
 import io.netty.util.CharsetUtil;
 
+import javax.swing.text.SimpleAttributeSet;
 import java.net.InetSocketAddress;
 import java.util.stream.StreamSupport;
 
@@ -26,8 +27,12 @@ public class EchoServerHandler  extends
 
         if(p.funOp.equals(Constants.casting) && p.content.length() > 0){
             if(!Status.localSocketAddress.getAddress().getHostAddress().equals(p.content)){
-                Status.shell.reply("receive casting from "+p.content);
-                Status.fellows.add(new InetSocketAddress(p.content,8080));
+                InetSocketAddress inetSocketAddress = new InetSocketAddress(p.content,8080);
+                if(!Status.fellows.contains(inetSocketAddress)){
+                    Status.shell.reply("receive casting from "+p.content);
+                    Status.fellows.add(inetSocketAddress);
+                }
+
             }
 
         }
