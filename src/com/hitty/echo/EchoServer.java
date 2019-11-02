@@ -42,10 +42,23 @@ public class EchoServer implements Runnable{
         MPacket mPacket = new MPacket(Status.localSocketAddress,castingInetSocketAddress, Constants.casting,"");
         Object object = JSONArray.toJSON(mPacket);
         String s = object.toString();
-        System.out.println(s);
+        //System.out.println(s);
         try {
             ch.writeAndFlush(
                     new DatagramPacket(Unpooled.copiedBuffer(s,CharsetUtil.UTF_8), castingInetSocketAddress)).sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public void write2fellow(InetSocketAddress inetSocketAddress){
+        MPacket mPacket = new MPacket(Status.localSocketAddress,inetSocketAddress, Constants.casting,"");
+        Object object = JSONArray.toJSON(mPacket);
+        String s = object.toString();
+        //System.out.println(s);
+        try {
+            ch.writeAndFlush(
+                    new DatagramPacket(Unpooled.copiedBuffer(s,CharsetUtil.UTF_8), inetSocketAddress)).sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -62,6 +75,8 @@ public class EchoServer implements Runnable{
             ch = b.bind(port).sync().channel();
             while(true){
                 this.write2Casting("");
+                this.write2fellow(new InetSocketAddress("192.168.0.255",8080));
+
                 if(!ch.closeFuture().await(5000)){
                     //System.out.println("echo no response");
                 }

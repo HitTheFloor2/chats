@@ -12,7 +12,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         //Status status = new Status();
-        Status.localSocketAddress = new InetSocketAddress("192.168.0.100",8080);
+        String host = args[0];
+        System.out.println("local IP: "+host);
+        Status.localSocketAddress = new InetSocketAddress(host,8080);
         EchoServer echoServer = new EchoServer(8080);
         Shell shell = new Shell();
         Status.shell =  shell;
