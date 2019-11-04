@@ -1,7 +1,5 @@
 package com.hitty.io;
 
-import com.hitty.MPacket;
-import com.hitty.echo.EchoServer;
 import com.hitty.status.Status;
 
 import java.net.InetSocketAddress;
@@ -115,6 +113,10 @@ public class Shell implements Runnable{
             * */
             if(s.equals("quit")){
                 changeView("chats");
+            }
+            if(s.startsWith("send")){
+                String file_path = s.substring(4);
+
             }
         }
 

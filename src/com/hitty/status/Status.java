@@ -1,11 +1,9 @@
 package com.hitty.status;
 
-import com.hitty.echo.EchoServer;
+import com.hitty.server.EchoServer;
 import com.hitty.io.Shell;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Set;
 
 public class Status {
