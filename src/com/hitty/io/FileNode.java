@@ -32,6 +32,7 @@ public class FileNode{
     public void initRootFileNode(){
         //FileNode root = new FileNode(null);
         File[] files = File.listRoots();
+        //System.out.println(files.getAbsolutePath());
         for(File file : files){
             FileNode temp = new FileNode(file);
             genChildList(temp);

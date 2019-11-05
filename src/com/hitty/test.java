@@ -1,16 +1,12 @@
 package com.hitty;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.hitty.io.FileNode;
-import com.hitty.server.FileServer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
 
 public class test {
     public static void main(String[] args) {
