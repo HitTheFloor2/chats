@@ -34,7 +34,7 @@ public final class HttpStaticFileServer {
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpStaticFileServerInitializer(sslCtx));
-            Channel ch = b.bind(PORT).sync().channel();
+            Channel ch = b.bind("127.0.0.1",PORT).sync().channel();
             System.err.println("Open your web browser and navigate to " +
                     (SSL ? "https" : "http") + "://127.0.0.1:" + PORT + '/');
             ch.closeFuture().sync();

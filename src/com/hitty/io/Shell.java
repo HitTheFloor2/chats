@@ -2,6 +2,7 @@ package com.hitty.io;
 
 import com.hitty.status.Status;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -116,6 +117,16 @@ public class Shell implements Runnable{
             }
             if(s.startsWith("send")){
                 String file_path = s.substring(4);
+
+            }
+            if(s.startsWith("fetch")){
+
+                String url = "http://"+fellow+":"+Integer.toString(Status.fileServer.port);
+                try {
+                    Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler "+url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
         }
