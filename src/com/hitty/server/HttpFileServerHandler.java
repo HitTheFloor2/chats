@@ -2,28 +2,11 @@ package com.hitty.server;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelProgressiveFuture;
-import io.netty.channel.ChannelProgressiveFutureListener;
-import io.netty.channel.DefaultFileRegion;
-import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
-import io.netty.handler.codec.http.DefaultHttpResponse;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpChunkedInput;
-import io.netty.handler.codec.http.HttpHeaderNames;
-import io.netty.handler.codec.http.HttpUtil;
-import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.channel.*;
+import io.netty.handler.codec.http.*;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedFile;
 import io.netty.util.CharsetUtil;
-import io.netty.util.internal.SystemPropertyUtil;
 
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
@@ -32,64 +15,16 @@ import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.regex.Pattern;
 
-import static io.netty.handler.codec.http.HttpMethod.*;
+import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.*;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_0;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-/**
- * A simple handler that serves incoming HTTP requests to send their respective
- * HTTP responses.  It also implements {@code 'If-Modified-Since'} header to
- * take advantage of browser cache, as described in
- * <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616</a>.
- *
- * <h3>How Browser Caching Works</h3>
- * <p>
- * Web browser caching works with HTTP headers as illustrated by the following
- * sample:
- * <ol>
- * <li>Request #1 returns the content of {@code /file1.txt}.</li>
- * <li>Contents of {@code /file1.txt} is cached by the browser.</li>
- * <li>Request #2 for {@code /file1.txt} does not return the contents of the
- * file again. Rather, a 304 Not Modified is returned. This tells the
- * browser to use the contents stored in its cache.</li>
- * <li>The server knows the file has not been modified because the
- * {@code If-Modified-Since} date is the same as the file's last
- * modified date.</li>
- * </ol>
- *
- * <pre>
- * Request #1 Headers
- * ===================
- * GET /file1.txt HTTP/1.1
- *
- * Response #1 Headers
- * ===================
- * HTTP/1.1 200 OK
- * Date:               Tue, 01 Mar 2011 22:44:26 GMT
- * Last-Modified:      Wed, 30 Jun 2010 21:36:48 GMT
- * Expires:            Tue, 01 Mar 2012 22:44:26 GMT
- * Cache-Control:      private, max-age=31536000
- *
- * Request #2 Headers
- * ===================
- * GET /file1.txt HTTP/1.1
- * If-Modified-Since:  Wed, 30 Jun 2010 21:36:48 GMT
- *
- * Response #2 Headers
- * ===================
- * HTTP/1.1 304 Not Modified
- * Date:               Tue, 01 Mar 2011 22:44:28 GMT
- *
- * </pre>
- */
-public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+public class HttpFileServerHandler extends SimpleChannelInboundHandler<FullHttpRequest>{
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     public static final int HTTP_CACHE_SECONDS = 60;
@@ -97,7 +32,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-        System.out.println(request.toString());
+        //System.out.println(request.toString());
         this.request = request;
         if (!request.decoderResult().isSuccess()) {
             sendError(ctx, BAD_REQUEST);
@@ -110,7 +45,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
         final boolean keepAlive = HttpUtil.isKeepAlive(request);
         final String uri = request.uri();
         final String path = sanitizeUri(uri);
-        System.out.println(path);
+        //System.out.println(path);
         if (path == null) {
             //System.out.println("1");
             this.sendError(ctx, FORBIDDEN);
@@ -123,7 +58,7 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
 //            return;
 //        }
         if (file.isDirectory()) {
-            System.out.println("Is a dir!");
+            //System.out.println("Is a dir!");
             if (uri.endsWith("/")) {
                 this.sendListing(ctx, file, uri);
             } else {
@@ -132,11 +67,10 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             return;
         }
         if (!file.isFile()) {
-            System.out.println("forbidden");
             sendError(ctx, FORBIDDEN);
             return;
         }
-        //System.out.println("log1");
+
 // Cache Validation
         String ifModifiedSince = request.headers().get(HttpHeaderNames.IF_MODIFIED_SINCE);
         if (ifModifiedSince != null && !ifModifiedSince.isEmpty()) {
@@ -189,15 +123,15 @@ public class HttpStaticFileServerHandler extends SimpleChannelInboundHandler<Ful
             @Override
             public void operationProgressed(ChannelProgressiveFuture future, long progress, long total) {
                 if (total < 0) { // total unknown
-                    System.err.println(future.channel() + " Transfer progress: " + progress);
+                    //System.err.println(future.channel() + " Transfer progress: " + progress);
                 } else {
-                    System.err.println(future.channel() + " Transfer progress: " + progress + " / " + total);
+                    //System.err.println(future.channel() + " Transfer progress: " + progress + " / " + total);
                 }
             }
 
             @Override
             public void operationComplete(ChannelProgressiveFuture future) {
-                System.err.println(future.channel() + " Transfer complete.");
+                //System.err.println(future.channel() + " Transfer complete.");
             }
         });
 // Decide whether to close the connection or not.

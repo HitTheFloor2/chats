@@ -121,7 +121,7 @@ public class Shell implements Runnable{
             }
             if(s.startsWith("fetch")){
 
-                String url = "http://"+fellow+":"+Integer.toString(Status.fileServer.port);
+                String url = "http://"+fellow+":"+Integer.toString(Status.httpFileServer.port);
                 try {
                     Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler "+url);
                 } catch (IOException e) {

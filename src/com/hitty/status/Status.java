@@ -2,7 +2,7 @@ package com.hitty.status;
 
 import com.hitty.server.EchoServer;
 import com.hitty.io.Shell;
-import com.hitty.server.FileServer;
+import com.hitty.server.HttpFileServer;
 
 import java.net.InetSocketAddress;
 import java.util.Set;
@@ -17,7 +17,7 @@ public class Status {
     public static InetSocketAddress localSocketAddress;
     public static Shell shell;
     public static EchoServer echoServer;
-    public static FileServer fileServer;
+    public static HttpFileServer httpFileServer;
     public Status(){}
     public static String name = "chats";
 
