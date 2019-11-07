@@ -32,7 +32,9 @@ public class HttpFileServerHandler extends SimpleChannelInboundHandler<FullHttpR
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-        //System.out.println(request.toString());
+        System.out.println(request.uri().toString());
+        System.out.println("**********************************************");
+        System.out.println("**********************************************");
         this.request = request;
         if (!request.decoderResult().isSuccess()) {
             sendError(ctx, BAD_REQUEST);
@@ -45,7 +47,7 @@ public class HttpFileServerHandler extends SimpleChannelInboundHandler<FullHttpR
         final boolean keepAlive = HttpUtil.isKeepAlive(request);
         final String uri = request.uri();
         final String path = sanitizeUri(uri);
-        //System.out.println(path);
+        System.out.println(path);
         if (path == null) {
             //System.out.println("1");
             this.sendError(ctx, FORBIDDEN);
@@ -105,6 +107,7 @@ public class HttpFileServerHandler extends SimpleChannelInboundHandler<FullHttpR
 // Write the initial line and the header.
         ctx.write(response);
 // Write the content.
+
         ChannelFuture sendFileFuture;
         ChannelFuture lastContentFuture;
         if (ctx.pipeline().get(SslHandler.class) == null) {

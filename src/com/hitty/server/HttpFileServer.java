@@ -60,5 +60,12 @@ public class HttpFileServer implements Runnable{
     public static void main(String[] args){
         HttpFileServer httpFileServer = new HttpFileServer(8080);
         new Thread(httpFileServer).start();
+        try {
+            Thread.sleep(2000);
+
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

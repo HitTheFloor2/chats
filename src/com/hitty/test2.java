@@ -1,23 +1,29 @@
 package com.hitty;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.hitty.io.FileNode;
+import com.hitty.util.Constants;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-public class test {
+public class test2 {
     public static void main(String[] args) {
+        MPacket mPacket = new MPacket(Constants.casting,"233");
+        byte[] bytes = JSON.toJSONBytes(mPacket, SerializerFeature.WriteMapNullValue);
+        System.out.println(bytes);
+        MPacket mPacket1 = JSON.parseObject(bytes,MPacket.class);
+        mPacket1.showInfo();
+        //FileNode fileNode = new FileNode(null);
+        //fileNode.initRootFileNode();
 
-        FileNode fileNode = new FileNode(null);
-        fileNode.initRootFileNode();
 
 
 
-        Object object = JSONArray.toJSON(fileNode);
-        System.out.println(object.toString().length());
 
         JFileChooser fileChooser=new JFileChooser();//创建对象
         fileChooser.setCurrentDirectory(new File("."));//当前显示目录 为工程目录
